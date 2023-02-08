@@ -1,10 +1,10 @@
 package com.auctopus.project.db.domain;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,19 +16,19 @@ import org.hibernate.annotations.DynamicInsert;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@DynamicInsert // JPA insert시 null인 필드 제외
-@Table(name = "live")
-public class Live implements Serializable {
+@DynamicInsert
+public class LiveChat {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int liveChatSeq;
     private int liveSeq;
     private String userEmail;
-    private Timestamp startTime;
-    private Timestamp endTime;
-    private int currentPrice;
-    private int bidUnit;
-    private String topBidder;
-    private int viewer;
-    private int participant;
+    private String message;
+    private Timestamp date;
+    private MessageType type;
+    public enum MessageType {
+        ENTER, TALK, BID, EXIT
+    }
 
 }

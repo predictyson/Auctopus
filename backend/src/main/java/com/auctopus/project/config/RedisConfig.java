@@ -25,7 +25,7 @@ public class RedisConfig {
     private int redisPort;
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
+    public RedisConnectionFactory connectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(redisHost);
         redisStandaloneConfiguration.setPort(redisPort);
@@ -35,20 +35,23 @@ public class RedisConfig {
 
     // RedisMessageListenerContainer는 메시지를 받아서 리스너들에게 비동기적으로 dispatch하는 역할을 수행하는 컨테이너
     // 발행된 메시지 처리를 위한 리스너들을 설정한다.
+    /**
+     *  redis pub/sub 메시지를 처리하는 listener
+     */
     @Bean
     public RedisMessageListenerContainer messageListener() {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(redisConnectionFactory());
+        container.setConnectionFactory(connectionFactory());
         return container;
     }
 
     // Redis 서버와 상호작용하기 위한 RedisTemplate 관련 설정을 해준다.
-    // Redis 서버 bytes 코드만이 저장되므로 key와 value에 Serializer를 설정해준다.
+    // Redis 서버에는 bytes 코드만이 저장되므로 key와 value에 Serializer를 설정해준다.
     // Json 포맷 형식으로 메시지를 교환하기 위해서 ValueSerializer에 Jaskson2jsonRedisSerializer로 설정해준다.
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setConnectionFactory(connectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
         return redisTemplate;

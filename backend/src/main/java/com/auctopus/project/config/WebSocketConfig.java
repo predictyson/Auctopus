@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry broker) {
         // enableSimpleBroker는 해당 주소를 구독하는 모든 클라이언트에게 메시지를 보낸다.
         // 인자에는 구독 요청의 prefix를 넣고, 클라이언트에서 1번 채널을 구독하고자 하면 /sub/1과 같은 규칙을 따른다.
-        broker.enableSimpleBroker("/sub");
+        broker.enableSimpleBroker("/sub" );
 
         // setApplicationDestinationPrefixes에서는 메시지 발행 요청의 prefix를 넣는다.
         // 즉 /pub로 시작하는 메시지만 해당 broker에서 받아서 처리한다.

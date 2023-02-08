@@ -80,6 +80,7 @@ public class AuctionController {
 
     @CrossOrigin("*")
     @DeleteMapping("/{auctionSeq}")
+
     public ResponseEntity<?> deleteAuction(Authentication authentication,
             @PathVariable("auctionSeq") int auctionSeq) {
         String userEmail = (String) authentication.getCredentials();
@@ -123,7 +124,8 @@ public class AuctionController {
             List<AuctionImage> auctionImageList = auctionImageService.getAuctionImageListByAuctionSeq(
                     auction.getAuctionSeq());
             auctionListResponseList.add(
-                    AuctionListResponse.of(auction, 0, auction.getStartPrice(), auctionImageList));
+                    AuctionListResponse.of(auction, 0, auction.getStartPrice(),
+                            auctionImageList));
         }
         return new ResponseEntity<>(auctionListResponseList, HttpStatus.OK);
     }
@@ -148,14 +150,16 @@ public class AuctionController {
             auctionList = auctionService.getAuctionListByLikeCount(state);
         } else if ("category".equals(sort)) {
             if (email != null) {
-                List<Integer> likeCategoryList = likeCategoryService.getLikeCategoryByEmail(email);
+                List<Integer> likeCategoryList = likeCategoryService.getLikeCategoryByEmail(
+                        email);
                 if (likeCategoryList.size() != 0) {
                     auctionList = auctionService.getAuctionListByCategorySeq(
                             likeCategoryList.get(0), state);
                 }
             } else {
                 likeCategorySeq = 1 + (int) (Math.random() * 8);
-                auctionList = auctionService.getAuctionListByCategorySeq(likeCategorySeq, state);
+                auctionList = auctionService.getAuctionListByCategorySeq(likeCategorySeq,
+                        state);
             }
         } else {
             auctionList = auctionService.getAuctionListByTime(state);
@@ -169,7 +173,8 @@ public class AuctionController {
             if (state == 2) {
                 live = liveService.getLiveInfo(auction.getAuctionSeq());
                 auctionListResponseList.add(
-                        AuctionListResponse.of(auction, live.getViewer(), live.getCurrentPrice(),
+                        AuctionListResponse.of(auction, live.getViewer(),
+                                live.getCurrentPrice(),
                                 auctionImageList));
             } else {
                 auctionListResponseList.add(

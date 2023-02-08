@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LiveEnterRequest {
+public class LiveViewerRequest {
 
     int liveSeq;
-    int autoPrice;
+    int price;
 
 }

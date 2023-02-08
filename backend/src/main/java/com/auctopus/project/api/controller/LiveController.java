@@ -1,6 +1,6 @@
 package com.auctopus.project.api.controller;
 
-import com.auctopus.project.api.request.LiveEnterRequest;
+import com.auctopus.project.api.request.LiveViewerRequest;
 import com.auctopus.project.api.service.AuctionService;
 import com.auctopus.project.api.service.LiveService;
 import com.auctopus.project.api.service.LiveViewerService;
@@ -52,10 +52,10 @@ public class LiveController {
     @CrossOrigin("*")
     @PostMapping("/enter")
     public ResponseEntity<?> enterLive(Authentication authentication,
-            @RequestBody LiveEnterRequest req) {
+            @RequestBody LiveViewerRequest req) {
         String userEmail = (String) authentication.getCredentials();
         int liveSeq = req.getLiveSeq();
-        int autoPrice = req.getAutoPrice();
+        int autoPrice = req.getPrice();
 
         liveViewerService.createLiveViewer(userEmail, liveSeq, autoPrice);
         liveService.increaseViewer(liveSeq);
@@ -72,15 +72,17 @@ public class LiveController {
             int currPrice = live.getCurrentPrice();
             int bidUnit = live.getBidUnit();
             int newPrice = Math.min(currPrice + bidUnit, autoPrice);
-            return bidNewPrice(authentication, liveSeq, newPrice);
+            return bidNewPrice(authentication, req);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @CrossOrigin("*")
     @PostMapping("/bid")
-    public ResponseEntity<?> bidNewPrice(Authentication authentication, @RequestBody int liveSeq,
-            @RequestBody int newPrice) {
+    public ResponseEntity<?> bidNewPrice(Authentication authentication,
+            @RequestBody LiveViewerRequest req) {
+        int liveSeq = req.getLiveSeq();
+        int newPrice = req.getPrice();
         String userEmail = (String) authentication.getCredentials();
         // 경매에 참여한 적 없는 사용자라면 경매 참여자를 1 늘려주고, 결국 최종 최고 입찰자가 될 사람이 누구인지 반환한다
         if (liveViewerService.getLiveViewer(userEmail).getState() == 0)

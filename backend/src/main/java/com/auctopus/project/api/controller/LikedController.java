@@ -42,7 +42,6 @@ public class LikedController {
     @Autowired
     private LiveService liveService;
 
-
     @PostMapping()
     public ResponseEntity<?> registerLikeAuction(Authentication authentication,
             @RequestBody Map<String, Integer> map) {

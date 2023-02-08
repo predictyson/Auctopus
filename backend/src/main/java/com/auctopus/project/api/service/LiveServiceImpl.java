@@ -6,19 +6,48 @@ import com.auctopus.project.common.exception.live.LiveNotFoundException;
 import com.auctopus.project.db.domain.Auction;
 import com.auctopus.project.db.domain.Live;
 import com.auctopus.project.db.repository.AuctionRepository;
+import com.auctopus.project.db.repository.LiveChatRepository;
 import com.auctopus.project.db.repository.LiveRepository;
+import com.auctopus.project.db.repository.LiveViewerRepository;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class LiveServiceImpl implements LiveService {
+
+    private static final String CHAT_ROOMS = "CHAT_ROOM";
+    private final RedisMessageListenerContainer redisMessageListenerContainer;
+    private final RedisSubscriber redisSubscriber;
+    private final RedisTemplate redisTemplate;
 
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
+    private LiveChatRepository liveChatRepository;
+    @Autowired
+    private LiveViewerRepository liveViewerRepository;
+    @Autowired
     private LiveRepository liveRepository;
+
+    private HashOperations<String, Integer, Live> opsHashLive;
+    private Map<Integer, ChannelTopic> topics;
+
+    @PostConstruct
+    private void init() {
+        opsHashLive = redisTemplate.opsForHash();
+        topics = new HashMap<>();
+    }
 
     @Override
     @Transactional
@@ -37,7 +66,15 @@ public class LiveServiceImpl implements LiveService {
                 .endTime(Timestamp.valueOf(auctionTime.toLocalDateTime().plusHours(1)))
                 .currentPrice(auction.getStartPrice())
                 .build();
+        opsHashLive.put(CHAT_ROOMS, auctionSeq, live);
         liveRepository.save(live);
+
+        // Redis에 topdic을 만들고, pub/sub 통신을 하기 위해 리스너도 설정한다.
+        ChannelTopic topic = topics.get(auctionSeq);
+        if (topic == null)
+            topic = new ChannelTopic(String.valueOf(auctionSeq));
+        redisMessageListenerContainer.addMessageListener(redisSubscriber, topic);
+        topics.put(auctionSeq, topic);
 
         // 경매방의 state를 진행중(2)로 바꾸어주자
         auction.setState(2);
@@ -119,4 +156,10 @@ public class LiveServiceImpl implements LiveService {
         live.setParticipant(live.getParticipant() - 1);
         liveRepository.save(live);
     }
+
+    @Override
+    public ChannelTopic getTopic(int auctionSeq) {
+        return topics.get(auctionSeq);
+    }
+
 }
