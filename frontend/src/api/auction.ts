@@ -1,5 +1,5 @@
 import instance from "./api";
-import { IAuction, IReqSearch } from "types/auction";
+import { IAuction, IReqSearch, IResLikeAuction } from "types/auction";
 
 const VITE_SERVER_DOMAIN = import.meta.env.VITE_SERVER_DOMAIN;
 
@@ -27,3 +27,19 @@ export const getAuctionsByQuery = async (data: IReqSearch) => {
     },
   });
 };
+
+export async function getAuctionLikes() {
+  return await instance.get<IResLikeAuction[]>(
+    `${VITE_SERVER_DOMAIN}/api/liked`
+  );
+}
+
+export async function postAuctionLike(auctionSeq: string) {
+  return await instance.post(`${VITE_SERVER_DOMAIN}/api/liked`, { auctionSeq });
+}
+
+export async function deleteAuctionLike(auctionSeq: string) {
+  return await instance.delete<IAuction>(
+    `${VITE_SERVER_DOMAIN}/api/liked/${auctionSeq}`
+  );
+}

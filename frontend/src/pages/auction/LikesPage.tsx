@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "@components/common/Layout";
 import MainToggleButtonGroup from "@components/main/MainToggleButtonGroup";
 import ItemsList from "@components/common/ItemsList";
 import styled from "styled-components";
 import ProfileImg from "@/assets/common/profile.png";
+import { useNavigate } from "react-router-dom";
+import { getAuctionLikes } from "@/api/auction";
 import { IAuction } from "types/auction";
+import { responseEncoding } from "axios";
 
-const liveAuction: IAuction[] = [
+const initLiveAuction: IAuction[] = [
   {
     auctionSeq: 1,
     email: "BIBI@naver.com",
@@ -15,24 +18,50 @@ const liveAuction: IAuction[] = [
     likeCount: 200,
     startPrice: 500000,
     state: 0,
-    viewer: 0,
-    price: 0,
-  },
-  {
-    auctionSeq: 2,
-    email: "ㅓㅑㅓㅑ@naver.com",
-    title: "내 찜이야",
-    startTime: "2023-01-28 16:10",
-    likeCount: 100,
-    startPrice: 300000,
-    state: 0,
-    viewer: 0,
-    price: 0,
+    auctionImage: {
+      auctionImageSeq: -1,
+      auctionSeq: 0,
+      imageUrl: "",
+    },
   },
 ];
 
 export default function LikesPage() {
-  const [live, setLive] = React.useState<"live" | "nonLive">("live");
+  const navigate = useNavigate();
+  const [live, setLive] = useState<"live" | "nonLive">("live");
+  const [liveAuction, setLiveAuction] = useState<IAuction[]>(initLiveAuction);
+
+  useEffect(() => {
+    const fetchAuctionLikes = async () => {
+      const res = await getAuctionLikes();
+      console.log(res);
+      if (res.status !== 200)
+        throw new Error("내 찜 목록을 불러 올 수 없습니다 (❁´◡`❁)");
+
+      const liveAuctionData: IAuction[] = [];
+      for (const el of res.data) {
+        liveAuctionData.push({
+          auctionSeq: el.auctionSeq,
+          email: el.userEmail,
+          likeCount: el.likeCount,
+          startPrice: el.startPrice,
+          startTime: el.startTime,
+          state: el.state,
+          title: el.title,
+          // FIXME: bid image url
+          // auctionImage: ,
+        });
+      }
+      setLiveAuction(liveAuctionData);
+    };
+
+    try {
+      fetchAuctionLikes();
+    } catch (error) {
+      console.log(error);
+      navigate("/error");
+    }
+  }, []);
 
   const changeLive = () => {
     setLive((prev) => (prev === "live" ? "nonLive" : "live"));

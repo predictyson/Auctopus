@@ -8,8 +8,6 @@ export interface IAuction {
   likeCount: number;
   startPrice: number;
   state: number;
-  viewer: number;
-  price: number;
   auctionImage?: {
     auctionImageSeq: number;
     auctionSeq: number;
@@ -21,4 +19,17 @@ export interface IReqSearch {
   word: string | null;
   category: string | null;
   state: number;
+}
+
+export interface IResLikeAuction {
+  auctionSeq: number;
+  userEmail: string;
+  categorySeq: number;
+  title: string;
+  content: string;
+  startTime: string;
+  startPrice: number;
+  bidUnit: number;
+  likeCount: 29;
+  state: 0;
 }
