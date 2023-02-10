@@ -24,11 +24,9 @@ public class LiveChat {
     private int liveChatSeq;
     private int liveSeq;
     private String userEmail;
+    private String nickname;
     private String message;
     private Timestamp date;
-    private MessageType type;
-    public enum MessageType {
-        ENTER, TALK, BID, EXIT
-    }
+    private int type;
 
 }

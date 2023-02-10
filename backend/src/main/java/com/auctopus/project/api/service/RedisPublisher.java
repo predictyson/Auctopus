@@ -14,8 +14,8 @@ public class RedisPublisher {
 
     private RedisTemplate<String, Object> redisTemplate;
 
-    public void publish(ChannelTopic topic, LiveChat message) {
-        redisTemplate.convertAndSend(topic.getTopic(), message);
+    public void publish(ChannelTopic topic, LiveChat publishMessage) {
+        redisTemplate.convertAndSend(topic.getTopic(), publishMessage);
     }
 
 }

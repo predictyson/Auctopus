@@ -28,9 +28,9 @@ public class LiveServiceImpl implements LiveService {
 
     private static final String CHAT_ROOMS = "CHAT_ROOM";
     private final RedisMessageListenerContainer redisMessageListenerContainer;
+    private final RedisPublisher redisPublisher;
     private final RedisSubscriber redisSubscriber;
     private final RedisTemplate redisTemplate;
-
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
@@ -66,8 +66,9 @@ public class LiveServiceImpl implements LiveService {
                 .endTime(Timestamp.valueOf(auctionTime.toLocalDateTime().plusHours(1)))
                 .currentPrice(auction.getStartPrice())
                 .build();
-        opsHashLive.put(CHAT_ROOMS, auctionSeq, live);
         liveRepository.save(live);
+        // 서버 간 채팅방 공유를 위해 redis hash에 저장
+        opsHashLive.put(CHAT_ROOMS, auctionSeq, live);
 
         // Redis에 topdic을 만들고, pub/sub 통신을 하기 위해 리스너도 설정한다.
         ChannelTopic topic = topics.get(auctionSeq);
