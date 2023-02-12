@@ -32,7 +32,8 @@ public class RedisSubscriber implements MessageListener {
             // LiveChat 객체로 매핑
             LiveChat liveChat = objectMapper.readValue(publishMessage, LiveChat.class);
             // Websocket 구독자에게 채팅 메시지 보내기
-            messagingTemplate.convertAndSend("sub/chat/room" + liveChat.getLiveSeq(), liveChat);
+//            messagingTemplate.convertAndSend("sub/chat/room" + liveChat.getLiveSeq(), liveChat);
+            messagingTemplate.convertAndSend("bid/room" + liveChat.getLiveSeq(), liveChat);
         } catch (Exception e) {
 //            throw new ChatMessageNotFoundException();
             log.error(e.getMessage());

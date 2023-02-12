@@ -61,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin("http://127.0.0.1:5173");
         configuration.addAllowedOrigin("http://localhost:5173");
         configuration.addAllowedOrigin("http://i8a704.p.ssafy.io");
         configuration.addAllowedOrigin("https://i8a704.p.ssafy.io");

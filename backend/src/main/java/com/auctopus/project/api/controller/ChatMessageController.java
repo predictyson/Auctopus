@@ -32,7 +32,7 @@ public class ChatMessageController {
     /**
      * Websocket을 통해 "/pub/chat/message"로 오는 메시징을 처리한다.
      */
-    @MessageMapping("/chat/message")
+    @MessageMapping("/room")
     @CrossOrigin("*")
     public void writeMessage(Authentication authentication,
             @RequestBody MessageWriteRequest req) {

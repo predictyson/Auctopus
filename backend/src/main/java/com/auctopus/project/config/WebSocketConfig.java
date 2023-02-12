@@ -22,17 +22,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry broker) {
         // enableSimpleBroker는 해당 주소를 구독하는 모든 클라이언트에게 메시지를 보낸다.
         // 인자에는 구독 요청의 prefix를 넣고, 클라이언트에서 1번 채널을 구독하고자 하면 /sub/1과 같은 규칙을 따른다.
-        broker.enableSimpleBroker("/sub" );
+//        broker.enableSimpleBroker("/sub" );
+        broker.enableSimpleBroker("/bid" );
 
         // setApplicationDestinationPrefixes에서는 메시지 발행 요청의 prefix를 넣는다.
         // 즉 /pub로 시작하는 메시지만 해당 broker에서 받아서 처리한다.
-        broker.setApplicationDestinationPrefixes("/pub");
+//        broker.setApplicationDestinationPrefixes("/pub");
+        broker.setApplicationDestinationPrefixes("/bid");
     }
 
     // 클라이언트에서 Websocket에 접속할 수 있는 Endpoint 지정
     @Override
     public void registerStompEndpoints(StompEndpointRegistry endpoint) {
+        endpoint.addEndpoint("/ws-stomp").setAllowedOrigins("*").withSockJS();
+        endpoint.addEndpoint("/ws-stomp").setAllowedOrigins("http://127.0.0.1:5173").withSockJS();
+        endpoint.addEndpoint("/ws-stomp").setAllowedOrigins("http://localhost:5173").withSockJS();
         endpoint.addEndpoint("/ws-stomp").setAllowedOriginPatterns("*").withSockJS();
+        endpoint.addEndpoint("/ws-stomp").setAllowedOriginPatterns("http://127.0.0.1:5173").withSockJS();
+        endpoint.addEndpoint("/ws-stomp").setAllowedOriginPatterns("http://localhost:5173").withSockJS();
     }
 
     // 스프링에 내장된 Simple Message Broker를 사용해 채팅 서버를 구현할 수도 있다.
