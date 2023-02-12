@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RequiredArgsConstructor
 @Controller
+@CrossOrigin("*")
 public class ChatMessageController {
 
     private final RedisPublisher redisPublisher;
@@ -31,6 +33,7 @@ public class ChatMessageController {
      * Websocket을 통해 "/pub/chat/message"로 오는 메시징을 처리한다.
      */
     @MessageMapping("/chat/message")
+    @CrossOrigin("*")
     public void writeMessage(Authentication authentication,
             @RequestBody MessageWriteRequest req) {
         String userEmail = (String) authentication.getCredentials();
